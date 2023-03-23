@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { nanoid } from 'nanoid';
 import {
   fetchContactsThunk,
   addContactThunk,
@@ -8,6 +7,8 @@ import {
 
 const initialState = {
   contacts: [],
+  isLoading: false,
+  error: null,
   filter: '',
 };
 
@@ -15,23 +16,6 @@ export const contactsSlice = createSlice({
   name: 'contacts',
   initialState,
   reducers: {
-    // addContact: (state, action) => {
-    //   const { newContact } = action.payload;
-
-    //   if (state.contacts.find(item => item.name === newContact.name)) {
-    //     return alert(`${newContact.name} is already in contact`);
-    //   }
-
-    //   newContact.id = `id-${nanoid()}`;
-    //   state.contacts.push(newContact);
-    // },
-    deleteContact: (state, action) => {
-      const { contactId } = action.payload;
-
-      state.contacts = state.contacts.filter(
-        contact => contact.id !== contactId
-      );
-    },
     setFilter: (state, action) => {
       state.filter = action.payload.filter;
     },
@@ -39,23 +23,44 @@ export const contactsSlice = createSlice({
   extraReducers: builder => {
     // Add reducers for additional action types here, and handle loading state as needed
     builder
+      .addCase(fetchContactsThunk.pending, (state, action) => {
+        state.isLoading = true;
+      })
       .addCase(fetchContactsThunk.fulfilled, (state, action) => {
         // Set all contacts to the state contacts
         state.contacts = action.payload;
+        state.isLoading = false;
+        state.error = null;
+      })
+      .addCase(fetchContactsThunk.rejected, (state, action) => {
+        state.error = action.payload;
+        state.isLoading = false;
+      })
+      .addCase(addContactThunk.pending, (state, action) => {
+        state.isLoading = true;
       })
       .addCase(addContactThunk.fulfilled, (state, action) => {
         // Add one contact to the state contacts
         state.contacts.push(action.payload);
+        state.isLoading = false;
+        state.error = null;
       })
-      .addCase(addContactThunk.rejected, (_, action) => {
+      .addCase(addContactThunk.rejected, (state, action) => {
         // Rejected contact adding
         alert(action.payload);
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(deleteContactThunk.pending, (state, action) => {
+        state.isLoading = true;
       })
       .addCase(deleteContactThunk.fulfilled, (state, action) => {
         // Delete one contact by id from state
         state.contacts = state.contacts.filter(
           contact => contact.id !== action.payload.id
         );
+        state.isLoading = false;
+        state.error = null;
       });
   },
 });

@@ -11,6 +11,8 @@ const isSubstringPresentInString = (string, substring) => {
 
 const ContactList = () => {
   const contacts = useSelector(state => state.contacts);
+  const errorMessage = useSelector(state => state.error);
+  const isLoading = useSelector(state => state.isLoading);
   const contactsFilter = useSelector(state => state.filter);
   const dispatch = useDispatch();
 
@@ -18,8 +20,9 @@ const ContactList = () => {
     dispatch(fetchContactsThunk());
   }, [dispatch]);
 
-  return contacts ? (
+  return contacts && !isLoading ? (
     <ul className="list">
+      {errorMessage}
       {contacts
         .filter(item => isSubstringPresentInString(item.name, contactsFilter))
         .map(contactItem => (

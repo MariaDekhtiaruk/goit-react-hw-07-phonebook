@@ -3,9 +3,14 @@ import api from 'services/api';
 
 export const fetchContactsThunk = createAsyncThunk(
   'contacts/fetchAll',
-  async () => {
-    const response = await api.fetchAll();
-    return response;
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.fetchAll();
+
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
   }
 );
 

@@ -2,7 +2,6 @@ import NameInput from './NameInput';
 import NumberInput from './NumberInput';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { addContact } from '../redux/contactsSlice';
 import { useDispatch } from 'react-redux';
 import { addContactThunk } from 'redux/contactsThunks';
 
